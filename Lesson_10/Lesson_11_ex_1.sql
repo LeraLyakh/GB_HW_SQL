@@ -1,0 +1,54 @@
+USE shop;
+
+DROP TABLE IF EXISTS logs;
+CREATE TABLE logs (
+	created_at DATETIME NOT NULL,
+	table_name VARCHAR(45) NOT NULL,
+	str_id BIGINT(20) NOT NULL,
+	name_value VARCHAR(45) NOT NULL
+) ENGINE = ARCHIVE;
+
+
+-- Триггеры
+DROP TRIGGER IF EXISTS t_users;
+delimiter //
+CREATE TRIGGER t_users AFTER INSERT ON users
+FOR EACH ROW
+BEGIN
+	INSERT INTO logs (created_at, table_name, str_id, name_value)
+	VALUES (NOW(), 'users', NEW.id, NEW.name);
+END //
+delimiter ;
+
+
+DROP TRIGGER IF EXISTS t_catalogs;
+delimiter //
+CREATE TRIGGER t_catalogs AFTER INSERT ON catalogs
+FOR EACH ROW
+BEGIN
+	INSERT INTO logs (created_at, table_name, str_id, name_value)
+	VALUES (NOW(), 'catalogs', NEW.id, NEW.name);
+END //
+delimiter ;
+
+DROP TRIGGER IF EXISTS t_products;
+delimiter //
+CREATE TRIGGER t_products AFTER INSERT ON products
+FOR EACH ROW
+BEGIN
+	INSERT INTO logs (created_at, table_name, str_id, name_value)
+	VALUES (NOW(), 'products', NEW.id, NEW.name);
+END //
+delimiter ;
+
+-- Проверка
+SELECT * FROM users;
+SELECT * FROM logs;
+
+INSERT INTO users (name, birthday_at)
+VALUES ('Лера', '1996-03-23');
+
+SELECT * FROM users;
+SELECT * FROM logs;
+
+
